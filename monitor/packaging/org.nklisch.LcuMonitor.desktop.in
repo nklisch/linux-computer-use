@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Agent Desktops
+Comment=View and manage local LCU agent desktops
+Exec="@CMAKE_INSTALL_FULL_BINDIR@/lcu" monitor
+Icon=preferences-desktop-display
+Terminal=false
+Categories=Utility;System;
+StartupWMClass=lcu-monitor

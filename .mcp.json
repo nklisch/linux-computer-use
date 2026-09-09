@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "linux-computer-use": {
+      "command": "lcu",
+      "args": ["mcp"],
+      "lifecycle": "lazy-keep-alive",
+      "requestTimeoutMs": 180000
+    }
+  }
+}

@@ -1,0 +1,38 @@
+name: Release
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-22.04 # older glibc baseline than the runner default, for wider binary compatibility
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxkbcommon-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+      - name: Build release binary
+        run: cargo build --release --locked
+      - name: Package
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          name="lcu-${tag}-x86_64-unknown-linux-gnu"
+          mkdir "dist/${name}"
+          cp target/release/lcu README.md LICENSE docs/*.md "dist/${name}/"
+          tar -czf "dist/${name}.tar.gz" -C dist "${name}"
+          # Checksum content must reference the bare filename so it verifies after download.
+          (cd dist && sha256sum "${name}.tar.gz" > "${name}.tar.gz.sha256")
+      - name: Create release
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          gh release create "$tag" \
+            --title "$tag" \
+            --generate-notes \
+            dist/lcu-*.tar.gz dist/lcu-*.tar.gz.sha256
+        env:
+          GH_TOKEN: ${{ github.token }}
