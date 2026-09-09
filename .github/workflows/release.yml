@@ -22,7 +22,7 @@ jobs:
         run: |
           tag="${GITHUB_REF_NAME}"
           name="lcu-${tag}-x86_64-unknown-linux-gnu"
-          mkdir "dist/${name}"
+          mkdir -p "dist/${name}"
           cp target/release/lcu README.md LICENSE docs/*.md "dist/${name}/"
           tar -czf "dist/${name}.tar.gz" -C dist "${name}"
           # Checksum content must reference the bare filename so it verifies after download.
