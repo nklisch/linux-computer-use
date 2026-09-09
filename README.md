@@ -4,7 +4,7 @@ Give local agents a reliable way to observe and operate graphical Linux applicat
 
 Each agent can work in its own **owned desktop**: an independent headless KDE/Wayland session with private pointer, keyboard focus, clipboard and application settings, created and destroyed on demand. Applications launch into a selected desktop; capture uses PipeWire; input goes through the desktop portal. One local daemon serves every frontend.
 
-**This is interaction isolation, not a security sandbox.** Owned desktops share your filesystem and user privileges. A claim coordinates participating tools; it cannot fence out humans or unrelated automation. And successful input delivery never proves the application did what you meant — the tool reports delivery and freshness as separate facts, and never replays uncertain input for you.
+Owned desktops are interaction isolation, not a sandbox — applications still run with your filesystem privileges. Boundaries are stated precisely in [Scope and limitations](#scope-and-limitations).
 
 ## Who is this for
 
@@ -58,7 +58,7 @@ Use the repository's [`.mcp.json`](.mcp.json) with clients that support that for
 - A **desktop** is a graphical session with its own screens, pointer, keyboard focus and clipboard. `main` is your existing desktop; every other desktop is one this tool created and owns.
 - A **claim** says who may send input through this tool. Claims belong to live connections: disconnect and the claim releases while the desktop and its applications stay. `force: true` explicitly preempts; claim age never does.
 - **Observation** returns an image plus capture evidence (`frame_id`, sequence, ages). Coordinates for actions refer to the returned image, and only the current claimant's latest observation is actionable.
-- **Actions** report `input_status` (`not_sent` / `sent` / `possibly_partial`) and always `outcome_verified: false`. Delivery, freshness and application success are distinct facts; verifying the application result is the caller's job.
+- **Actions** report `input_status` (`not_sent` / `sent` / `possibly_partial`) and always `outcome_verified: false`: delivery and application success are separate facts, and verifying the result is the caller's job.
 
 ```json
 {
@@ -73,7 +73,7 @@ Supported gestures: `move`, `move_relative`, `click`, `scroll`, `keypress`, `typ
 ## Agent workflow
 
 1. `computer_desktop` `operation:"list"` / `"create"` — choose or create a desktop. `main` is the shared desktop; everything else is agent-owned.
-2. `operation:"claim", desktop_id: ID` — claims belong to this live connection. Owned control opens unattended; `main` needs `computer_start` plus your portal authorization (an agent must never approve its own access prompt).
+2. `operation:"claim", desktop_id: ID` — claims belong to this live connection. Owned control opens unattended; `main` needs `computer_start`, and the user answers the portal prompt (an agent never approves its own access).
 3. `operation:"launch"` with `argv` (argument vector, not a shell string) and absolute `cwd` — start applications in the desktop.
 4. `computer_observe` — returns the image and a `frame_id`.
 5. `computer_act` with that desktop and frame — then inspect the result before more input. `observe:false` suppresses the post-action image; you must observe again before the next action.
@@ -82,7 +82,7 @@ Supported gestures: `move`, `move_relative`, `click`, `scroll`, `keypress`, `typ
 Notes that matter in practice:
 
 - **Freshness**: pass `after_sequence` + `timeout_ms` (0–5000) to `computer_observe` to wait for a frame newer than your last one. Timeout returns cached pixels with `freshness_met:false` — a quiet desktop legitimately returns cached frames.
-- **Intermediate frames**: the immediate post-action image can show hover/focus before the application finishes. One gesture, then observe, then decide — replaying against an intermediate frame can undo your own action (see [docs/DESIGN-NOTES.md](docs/DESIGN-NOTES.md)).
+- **Intermediate frames**: the immediate post-action image can show hover/focus before the application finishes — observe again before the next gesture; replaying against an intermediate frame can undo your own action ([docs/DESIGN-NOTES.md](docs/DESIGN-NOTES.md)).
 - **Inspect/focus**: `computer_inspect` exposes AT-SPI accessibility metadata; `computer_focus` requests focus on an inspected node, and `expected_focus_node_id` on `computer_act` refuses to send if that node lost focus. Application-reported evidence, not a desktop lock; screenshots remain the fallback.
 - **Recovery**: after a capture failure or layout change, `computer_start {"restart":true}` recreates the session with the saved permission. Nothing is ever automatically replayed.
 - **Emergency stop**: `lcu stop` reaches every worker independent of the daemon and MCP, cancelling input and releasing held keys without destroying applications. `lcu stop --desktop ID` targets one.
@@ -149,10 +149,10 @@ Automated tests cover image geometry, capture layout and freshness, input cleanu
 ## Scope and limitations
 
 - Not a sandbox: owned desktops share your filesystem and privileges; isolation covers input focus, clipboard and application settings.
-- Claims coordinate participants of this tool only; humans and other automation can always interfere (especially on `main`).
-- Input delivery is never automatically replayed, and `outcome_verified` is always the caller's to establish.
-- Qualified on KDE Plasma 6 / Wayland / KWin virtual sessions. GNOME, Sway and other compositors need qualification — [docs/PORTING.md](docs/PORTING.md) maps the work.
-- One machine's NVIDIA stack is not every NVIDIA stack; graphics quirks are per-application launch settings here, never global defaults.
+- Claims coordinate this tool's participants; humans and other automation can always interfere.
+- Delivery is never automatically replayed; `outcome_verified` is the caller's to establish.
+- Qualified on KDE Plasma 6 / Wayland / KWin virtual sessions; GNOME, Sway and others need qualification — [docs/PORTING.md](docs/PORTING.md) maps the work.
+- Graphics quirks are per-application launch settings, never global defaults.
 
 ## License
 
