@@ -15,7 +15,7 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libxkbcommon-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+          sudo apt-get install -y libxkbcommon-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libunwind-dev
       - name: Build release binary
         run: cargo build --release --locked
       - name: Package

@@ -39,13 +39,13 @@ sh scripts/install.sh        # cargo install --path, honors LCU_INSTALL_ROOT
 lcu doctor
 ```
 
-Build dependencies (the `ncu`→`lcu` binary itself; the optional monitor needs more, below):
+Build dependencies (for the `lcu` binary itself; the optional monitor needs more, below):
 
 | Distribution | Packages |
 |---|---|
 | Fedora | `libxkbcommon-devel gstreamer1-devel gstreamer1-plugins-base-devel gstreamer1-pipewire` |
 | Ubuntu/Debian | `libxkbcommon-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev gstreamer1.0-pipewire` |
-| Arch | `libxkbcommon gstreamer gst-plugins-base pipewire` |
+| Arch | `libxkbcommon gstreamer gst-plugins-base gst-plugin-pipewire` |
 
 You also need a running `xdg-desktop-portal` with the KDE backend inside your Wayland session. `lcu doctor` reports portal versions and capture plugins without requesting desktop access.
 
