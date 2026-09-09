@@ -1,11 +1,10 @@
 # Design notes: field lessons from Linux desktop automation
 
-These notes distill real incidents and qualifications from driving agents
-against native Linux applications. Each entry states the symptom, what the
-evidence showed, and the rule the codebase now follows. They are observations
-from specific stacks (Fedora/Nobara, KDE Plasma 6, NVIDIA RTX 4070,
-WebKitGTK 2.52, Godot 4.7, GTK 3.24), not universal laws — treat them as
-hypotheses with unusually good provenance.
+These notes record incidents and qualification results from driving agents
+against native Linux applications. Each entry gives the symptom, the evidence,
+and the rule the codebase follows. Results are from Fedora/Nobara, KDE Plasma 6,
+NVIDIA RTX 4070, WebKitGTK 2.52, Godot 4.7, and GTK 3.24; treat them as
+stack-specific hypotheses.
 
 ## Delivery, freshness, and application success are three different facts
 
@@ -19,10 +18,10 @@ routinely show hover/focus state before the action completes; a subsequent
 observation — with no additional input — shows the completed state.
 
 **Rule.** One gesture, then observe application state, then decide. A settle
-delay improves legibility but is not a completion assertion. Nothing here ever
-replays uncertain input automatically: repeating a click or paste can cause a
-*second* effect. This is why every action result carries `outcome_verified:
-false` forever — it is not a TODO.
+delay improves legibility but is not a completion assertion. LCU does not
+automatically replay uncertain input: repeating a click or paste can cause a
+*second* effect. Every action result carries `outcome_verified: false`; it is
+not a TODO.
 
 ## Black captures with healthy metadata are a real failure mode
 

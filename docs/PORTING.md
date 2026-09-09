@@ -1,12 +1,10 @@
 # Porting notes: where this assumes KDE
 
-LCU is deliberately **not** a compositor-provider framework. It is a working,
-qualified implementation for one desktop: KDE Plasma 6 on Wayland. This document
-maps exactly where that assumption lives, what is shared freedesktop
-infrastructure, and what qualifying another Wayland desktop would actually
-touch. If you want LCU-style behavior on GNOME, Sway or something else, this is
-the work list — and the honest boundary between "expected to work" and
-"qualified".
+LCU is not a compositor-provider framework. It is qualified for one desktop:
+KDE Plasma 6 on Wayland. This document maps where that assumption lives, what
+is shared freedesktop infrastructure, and what qualifying another Wayland
+desktop would touch — the work list for GNOME or Sway, and the line between
+expected-to-work and qualified.
 
 ## Layer map
 

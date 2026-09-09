@@ -11,7 +11,7 @@ Owned desktops are interaction isolation, not a sandbox — applications still r
 - Anyone building or running **computer-use agents on Linux** who wants grounded screenshots, precise input, and honest feedback instead of a vague "success".
 - Anyone who wants a **working reference architecture** for Linux desktop automation: portals, PipeWire capture, keymap-correct keyboard synthesis, process supervision, claim-based coordination, cancellation-safe cleanup. The code is deliberately readable about its boundaries — see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/PORTING.md](docs/PORTING.md) and [docs/DESIGN-NOTES.md](docs/DESIGN-NOTES.md) for the hard-won details.
 
-Supported configuration, stated honestly:
+Supported configuration:
 
 | Layer | Status |
 |---|---|
@@ -84,7 +84,7 @@ Notes that matter in practice:
 - **Freshness**: pass `after_sequence` + `timeout_ms` (0–5000) to `computer_observe` to wait for a frame newer than your last one. Timeout returns cached pixels with `freshness_met:false` — a quiet desktop legitimately returns cached frames.
 - **Intermediate frames**: the immediate post-action image can show hover/focus before the application finishes — observe again before the next gesture; replaying against an intermediate frame can undo your own action ([docs/DESIGN-NOTES.md](docs/DESIGN-NOTES.md)).
 - **Inspect/focus**: `computer_inspect` exposes AT-SPI accessibility metadata; `computer_focus` requests focus on an inspected node, and `expected_focus_node_id` on `computer_act` refuses to send if that node lost focus. Application-reported evidence, not a desktop lock; screenshots remain the fallback.
-- **Recovery**: after a capture failure or layout change, `computer_start {"restart":true}` recreates the session with the saved permission. Nothing is ever automatically replayed.
+- **Recovery**: after a capture failure or layout change, `computer_start {"restart":true}` recreates the session with the saved permission. It does not replay input.
 - **Emergency stop**: `lcu stop` reaches every worker independent of the daemon and MCP, cancelling input and releasing held keys without destroying applications. `lcu stop --desktop ID` targets one.
 
 ## CLI

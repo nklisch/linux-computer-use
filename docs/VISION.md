@@ -18,4 +18,4 @@ Owned desktops use private application profiles while sharing the user's project
 
 A **claim** coordinates who may send input through LCU. A claim on the main desktop cannot prevent human input or unrelated automation. Owned desktops must never fall back to the main desktop when their session fails.
 
-LCU prioritizes trustworthy feedback, recoverable failures and bounded resource ownership over pretending that desktop automation is deterministic. It does not infer task completion from event delivery, automatically replay uncertain actions, or hide lost guarantees behind a successful tool result.
+LCU prioritizes trustworthy feedback, recoverable failures and bounded resource ownership. It does not infer task completion from event delivery, replay uncertain actions automatically, or hide lost guarantees behind a successful tool result.
